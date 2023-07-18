@@ -15,8 +15,8 @@ public class CuentaTest {
         Cuenta cuenta = new Cuenta("Andres", new BigDecimal(110001.010));
         String esperado = "Andres";
         String realidad = cuenta.getPersona();
-        assertNotNull(realidad);
-        assertEquals(esperado, realidad, "ERRRORRRR");
+        assertNotNull(realidad, "La cuenta no puede ser nula");
+        assertEquals(esperado, realidad, "el nombre de la cuenta no es el que se esperaba");
         assertTrue(true, "ERRRRRRRRRRROOOOR x2");
     }
 
@@ -65,6 +65,46 @@ public class CuentaTest {
         String actual = exception.getMessage();
         String esperado = "Dinero Insuficiente";
         assertEquals(esperado, actual);
+    }
+
+    @Test
+    void testTransferirDineroCuentas(){
+        Cuenta cuenta1 = new Cuenta("Jhon Show", new BigDecimal("2500"));
+        Cuenta cuenta2 = new Cuenta("Andres Iniesta", new BigDecimal("1500.8989"));
+
+        Banco banco = new Banco();
+        banco.setNombre("Banco de sol");
+        banco.transferir(cuenta2, cuenta1, new BigDecimal("500"));
+
+        assertEquals("1000.8989", cuenta2.getSaldo().toPlainString());
+        assertEquals("3000", cuenta1.getSaldo().toPlainString());
+    }
+
+    @Test
+    void testRelacionBancoCuentas(){
+        Cuenta cuenta1 = new Cuenta("Jhon Show", new BigDecimal("2500"));
+        Cuenta cuenta2 = new Cuenta("Andres Iniesta", new BigDecimal("1500.8989"));
+
+        Banco banco = new Banco();
+        banco.addCuenta(cuenta1);
+        banco.addCuenta(cuenta2);
+        banco.setNombre("Banco del sol");
+        banco.transferir(cuenta2, cuenta1, new BigDecimal("500"));
+
+        //AssertAll: podemos hacer varios hacer varios assert a la vez y ver el resultado en de todos en paralelo
+        assertAll(()->{assertEquals("1000.8989", cuenta2.getSaldo().toPlainString());},
+                  ()->{assertEquals("3000", cuenta1.getSaldo().toPlainString());},
+                  ()->{assertEquals(2, banco.getCuentas().size());},
+                  ()->{assertEquals("Banco del sol", cuenta1.getBanco().getNombre());},
+                  ()->{assertEquals("Andres Iniesta", banco.getCuentas().stream()
+                    .filter(c -> c.getPersona().equals("Andres Iniesta"))
+                    .findFirst()
+                    .get().getPersona());},
+                  ()->{assertTrue(banco.getCuentas().stream()
+                    //.filter(c -> c.getPersona().equals("Andres Iniesta"))                  ESTA ES UNA OPCION, LA MEJOR ES USANDO "ANYMATCH"
+                    //.findFirst().isPresent()); 
+                    .anyMatch(c -> c.getPersona().equals("Andres Iniesta")));}
+                );
     }
 }
 

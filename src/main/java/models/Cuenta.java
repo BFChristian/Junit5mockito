@@ -7,11 +7,13 @@ import exceptions.DineroInsuficienteException;
 public class Cuenta {
     private String Persona;
     private BigDecimal saldo;
+    private Banco banco;
     
     public Cuenta(String persona, BigDecimal saldo) {
         Persona = persona;
         this.saldo = saldo;
     }
+    
     public String getPersona() {
         return Persona;
     }
@@ -23,6 +25,12 @@ public class Cuenta {
     }
     public void setSaldo(BigDecimal saldo) {
         this.saldo = saldo;
+    }
+    public Banco getBanco() {
+        return banco;
+    }
+    public void setBanco(Banco banco) {
+        this.banco = banco;
     }
 
     public void debito(BigDecimal monto) {
@@ -36,4 +44,5 @@ public class Cuenta {
     public void credito(BigDecimal monto){
         this.saldo = this.saldo.add(monto);
     }
+    
 }
